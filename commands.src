@@ -1210,6 +1210,7 @@ addAliasCommandHandler = function(params, extensionMediator)
     command = params.command
 
     commandManager.addAlias(alias, command)
+    commandManager.saveAliases()
 end function
 commandManager.registerCommand(Command.New({
     "name": "addalias",
@@ -1225,6 +1226,25 @@ commandManager.registerCommand(Command.New({
         })
     ],
     "callback": @addAliasCommandHandler
+}))
+
+RemAliasCommandHandler = function(params, extensionMediator)
+    commandManager = extensionMediator.getExtension("commandManager")
+    alias = params.alias
+
+    commandManager.removeAlias(alias)
+    commandManager.saveAliases()
+end function
+commandManager.registerCommand(Command.New({
+    "name": "remalias",
+    "description": "Remove an alias",
+    "parameters": [
+        Parameter.New({
+            "name": "alias",
+            "required": true
+        })
+    ],
+    "callback": @RemAliasCommandHandler
 }))
 
 nsLookupCommandHandler = function(params, extensionMediator)

@@ -87,6 +87,9 @@ init = function()
 
     themeManager = extensionMediator.getExtension("themeManager")
     themeManager.init()
+
+    commandManager = extensionMediator.getExtension("commandManager")
+    commandManager.loadAliases()
 end function
 
 main = function()
