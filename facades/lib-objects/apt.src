@@ -1,0 +1,46 @@
+import_code("../../libs/error.src")
+
+Apt = {}
+Apt.aptclient = null
+Apt.update = function()
+    return(self.aptclient.update)
+end function
+Apt.install = function(option)
+    result = self.aptclient.install(option)
+    if result == 1 then
+        return print("Installed " + option + " successfully!")
+    else
+        return print("Could not locate: " + option)
+    end if
+end function
+Apt.search = function(option)
+    return self.aptclient.search(option)
+end function
+Apt.show = function(ip)
+    return self.aptclient.show(ip)
+end function
+Apt.add_repo = function(option)
+    result = self.aptclient.add_repo(option)
+    if result == "" then
+        return print("Launch apt with the update option to apply the changes")
+    else
+        return result
+    end if
+end function
+Apt.del_repo = function(option)
+    result = self.aptclient.del_repo(option)
+    if result == "" then
+        return print("Launch apt with the update option to apply the changes")
+    else
+        return result
+    end if
+end function
+Apt.check_upgrade = function()
+    return Error("This function is still under development. \n Please use 'apt install' to update your packages for now")
+end function
+Apt.New = function(object)
+    if typeof(object) != "aptclientLib" then return Error.New("Invalid aptclient object")
+    result = new Apt
+    result.aptclient = object
+    return result
+end function

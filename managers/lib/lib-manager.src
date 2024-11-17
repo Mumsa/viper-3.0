@@ -2,10 +2,12 @@ import_code("../../libs/functional.src")
 import_code("../../libs/error.src")
 import_code("../../facades/lib-objects/metaxploit.src")
 import_code("../../facades/lib-objects/crypto.src")
+import_code("../../facades/lib-objects/apt.src")
 
 LIB_TYPES = {}
 LIB_TYPES.METAXPLOIT = "metaxploit"
 LIB_TYPES.CRYPTO = "crypto"
+LIB_TYPES.APTCLIENT = "aptclient"
 
 Lib = {}
 Lib.data = {
@@ -38,6 +40,8 @@ Lib.New = function(lib, data)
     if result.lib isa Metaxploit then result.type = LIB_TYPES.METAXPLOIT
     if typeof(lib) == "cryptoLib" then result.lib = Crypto.New(lib)
     if result.lib isa Crypto then result.type = LIB_TYPES.CRYPTO
+    if typeof(lib) == "aptclientLib" then result.lib = Apt.New(lib)
+    if result.lib isa Apt then result.type = LIB_TYPES.APTCLIENT
 
     if result.type == "unknown" then return Error.New("Lib type must be known")
     return result
@@ -48,11 +52,13 @@ LibManager.mediator = null
 LibManager.libs = []
 LibManager.currentLibs = {
     LIB_TYPES.METAXPLOIT: null,
-    LIB_TYPES.CRYPTO: null
+    LIB_TYPES.CRYPTO: null,
+    LIB_TYPES.APTCLIENT: null
 }
 LibManager.pivotLibs = {
     LIB_TYPES.METAXPLOIT: null,
-    LIB_TYPES.CRYPTO: null
+    LIB_TYPES.CRYPTO: null,
+    LIB_TYPES.APTCLIENT: null
 }
 LibManager.addLib = function(lib, data)
     lib = Lib.New(lib, data)
@@ -102,11 +108,13 @@ LibManager.New = function()
     result.libs = []
     result.currentLibs = {
         LIB_TYPES.METAXPLOIT: null,
-        LIB_TYPES.CRYPTO: null
+        LIB_TYPES.CRYPTO: null,
+        LIB_TYPES.APTCLIENT: null
     }
     result.pivotLibs = {
         LIB_TYPES.METAXPLOIT: null,
-        LIB_TYPES.CRYPTO: null
+        LIB_TYPES.CRYPTO: null,
+        LIB_TYPES.APTCLIENT: null
     }
     return result
 end function

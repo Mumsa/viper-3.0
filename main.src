@@ -68,6 +68,18 @@ init = function()
             })
         end if
     end if
+    
+    aptclientFile = sessionManager.currentSession.handler.getFile("aptclient.so")
+    if aptclientFile isa Error then aptclientFile = sessionManager.currentSession.handler.getFile("/lib/aptclient.so")
+    if not (aptclientFile isa Error) then
+        aptclient = include_lib(aptclientFile.path)
+        if aptclient != null then
+            libManager.addLib(aptclient, { 
+                "ip": sessionManager.currentSession.data.ip,
+                "path": aptclientFile.path(),
+            })
+        end if
+    end if
 
     clear_screen()
     viperUi.init()

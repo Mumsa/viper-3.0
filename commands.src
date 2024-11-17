@@ -1678,3 +1678,86 @@ mailHackCommandHandler = function(params, extensionMediator)
 	end if
 end function
 commandManager.registerCommand(Command.New({"name": "mailhack", "description": "Run a dictionary attack on the given email address", "parameters": [ Parameter.New({ "name": "address", "required": true })], "callback": @mailHackCommandHandler }))
+
+aptCommandHandler = function(params, extensionMediator)
+    libmannager = extensionMediator.getExtension("libManager")
+    lib = libmannager.getCurrentLib("aptclient")
+    if lib == null then return Error.New("No aptclient library loaded")
+
+    command = params.command
+    options = params.options
+
+    if command == "update" then
+        return lib.lib.update()
+    else if command == "install" then
+        if options == "" then 
+            return Error("No program entered!")
+        else
+            return lib.lib.install(options)
+        end if
+    else if command == "search" then
+        if options == "" then 
+            return Error("No program entered!")
+        else
+            return lib.lib.search(options)
+        end if
+    else if command == "show" then
+        if options == "" then 
+            return Error("No repo entered!")
+        else
+            return lib.lib.show(options)
+        end if
+    else if command == "addrepo" then
+        if options == "" then 
+            return Error("No repo entered!")
+        else
+            return lib.lib.add_repo(options)
+        end if
+    else if command == "delrepo" then
+        if options == "" then 
+            return Error("No repo entered!")
+        else
+            return lib.lib.del_repo(options)
+        end if
+    else if command == "upgrade" then
+        return lib.lib.check_upgrade()
+    else if command == null then
+        return print("
+Usage: apt install [program_name]
+Usage: apt search [program_name]
+Usage: apt show [repo_address]
+Usage: apt addrepo [repo_address]
+Usage: apt delrepo [repo_address]
+Usage: apt update
+Usage: apt upgrade !!(UNDER DEVELOPMENT)!!
+
+Example: apt install libssh.so
+Example: apt search decipher")
+    end if
+
+
+end function
+commandManager.registerCommand(Command.New({
+    "name": "apt",
+    "description": "apt-get command",
+"parameters": [
+    OptionsParameter.New({
+        "name": "command",
+        "required": false,
+        "options": {
+            "update": "update",
+            "install": "install",
+            "search": "search",
+            "show": "show",
+            "addrepo": "addrepo",
+            "delrepo": "delrepo",
+            "upgrade": "upgrade"
+        }
+    }),
+    Parameter.New({
+        "name": "options",
+        "required": false
+    })
+    ],
+    "callback": @aptCommandHandler
+}))
