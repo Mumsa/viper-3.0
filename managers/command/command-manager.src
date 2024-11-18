@@ -97,6 +97,19 @@ end function
 CommandManager.removeAlias = function(alias)
     self.aliases.remove(alias)
 end function
+CommandManager.saveAliases = function()
+    configManager = self.mediator.getExtension("configManager")
+    self.aliases = self.aliases + configManager.config.aliases
+    configManager.saveConfig({"aliases": self.aliases})
+end function
+CommandManager.loadAliases = function()
+    configManager = self.mediator.getExtension("configManager")
+    if not configManager.config.hasIndex("aliases") then
+        configManager.saveConfig({"aliases": self.aliases})
+    end if
+    self.aliases = self.aliases + configManager.config.aliases
+    configManager.saveConfig({"aliases": self.aliases})
+end function
 CommandManager.New = function()
     result = new CommandManager
     result.commands = {}

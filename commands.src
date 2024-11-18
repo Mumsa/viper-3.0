@@ -1720,7 +1720,7 @@ aptCommandHandler = function(params, extensionMediator)
             return lib.lib.del_repo(options)
         end if
     else if command == "upgrade" then
-        return lib.lib.check_upgrade()
+            return lib.lib.check_upgrade(options)
     else if command == null then
         return print("
 Usage: apt install [program_name]
@@ -1729,7 +1729,7 @@ Usage: apt show [repo_address]
 Usage: apt addrepo [repo_address]
 Usage: apt delrepo [repo_address]
 Usage: apt update
-Usage: apt upgrade !!(UNDER DEVELOPMENT)!!
+Usage: apt upgrade
 
 Example: apt install libssh.so
 Example: apt search decipher")
@@ -1739,7 +1739,7 @@ Example: apt search decipher")
 end function
 commandManager.registerCommand(Command.New({
     "name": "apt",
-    "description": "apt-get command",
+    "description": "Package manager, used for installing and upgrading packages.",
 "parameters": [
     OptionsParameter.New({
         "name": "command",

@@ -35,8 +35,71 @@ Apt.del_repo = function(option)
         return result
     end if
 end function
-Apt.check_upgrade = function()
-    return Error("This function is still under development. \n Please use 'apt install' to update your packages for now")
+Apt.PendingUpdating = function(folderPath)
+	pendingUpdate = []
+	targetFolder = get_shell.host_computer.File(folderPath)
+    if targetFolder isa Error then return Error.New("Failed to get package file")
+	if targetFolder != null then
+		files = targetFolder.get_files
+		for itemFile in files
+			output = self.aptclient.check_upgrade(itemFile.path)
+			if output == true then
+				pendingUpdate.push(itemFile.name)
+			end if
+		end for
+	end if
+	return pendingUpdate
+end function 
+Apt.check_upgrade = function(package)
+    sessionManager = extensionMediator.getExtension("sessionManager")
+    viperUi = extensionMediator.getExtension("viperUi")
+    print("\nReading package lists...")
+	//upgrade all packages
+	if package == null then
+		pendingPackages = self.PendingUpdating("/lib") + self.PendingUpdating("/bin")
+		if pendingPackages.len == 0 then return Error.New("<color=#c3201f>No updates needed")
+		print("The following packages will be updated:")
+		pkgs = ""
+		for itemPackage in pendingPackages
+			pkgs = pkgs + " " + itemPackage
+		end for
+		print(pkgs)
+		print("\nDo you want to continue?(y/n)")
+        option = user_input(viperUi.displaySession(sessionManager.currentSession))
+		if option == "y" or option == "yes" then
+			counter = 0
+			for itemPackage in pendingPackages
+				output = self.aptclient.install(itemPackage)
+				if output == true then
+					counter = counter + 1
+				else if output then
+					print(output)
+				end if
+			end for
+			print(counter + " packages updated")
+		else 
+			return Error.New("<color=#c3201f>aborted")
+		end if
+	
+	//upgrade package
+	else if package != 0 then
+		output = self.aptclient.check_upgrade(package)
+		if output == false then return print("No updates needed")
+		if output == true then
+			print("The following package will be updated:\npackage")
+            print("\nDo you want to continue?(y/n)")
+            option = user_input(viperUi.displaySession(sessionManager.currentSession))
+			if option == "y" or option == "yes" then
+				output = self.aptclient.install(package)
+				if output == true then return print(package + " installed.")
+				print(output)				
+			else 
+				return Error.New("<color=#c3201f>aborted")
+			end if
+		else 
+			print(output)
+		end if
+	end if
 end function
 Apt.New = function(object)
     if typeof(object) != "aptclientLib" then return Error.New("Invalid aptclient object")
